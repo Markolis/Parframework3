@@ -78,6 +78,7 @@ namespace Parframework
     friend void* cancel_handler(void* stack);
     friend void prepare_exit(pthread_t_pfr* thr);
     friend void pthread_testcancel();
+    friend void* threadPoolTask(void* arg);
 
     public:
       pthread_t_pfr();
@@ -303,14 +304,14 @@ class packaged_task_pfr<Ret(ArgTypes...)>
       Ret (*taskFunc)(ArgTypes...) = argStr->task;
       promise_pfr<Ret>* promise = argStr->promise; 
 
-      promise->set_value(std::apply(taskFunc, tuple););
+      promise->set_value(std::apply(taskFunc, tuple));
 
-      taskFunc = NULL;
+      argStr->task = NULL;
       vTaskDelete(NULL);
     };
     
   TaskHandle_t tHandle = NULL;
-  xTaskCreate(wrappedFunc, "PACKAGED_TASK", 1024, &argStruct, 0, &tHandle);
+  xTaskCreate(wrappedFunc, "PACKAGED_TASK", 1024, &argStruct, 1, &tHandle);
 
   assert(tHandle);
   }
@@ -341,7 +342,7 @@ class ThreadPool
 {
   friend void* threadPoolTask(void* arg);
   public:
-  ThreadPool(): pool{}, size{THREAD_NUMBER}, waiting_stack{}, queue{xQueueCreate(7, sizeof(threadPoolArgStruct))}
+  ThreadPool(): pool{}, size{THREAD_NUMBER}, waiting_queue{}, queue{xQueueCreate(7, sizeof(threadPoolArgStruct))}
   {
     for (int i = 0; i < THREAD_NUMBER; i++)
     {
@@ -382,7 +383,7 @@ class ThreadPool
 
   std::array<pthread_t_pfr, THREAD_NUMBER> pool;
   size_t size;
-  std::stack<threadPoolArgStruct> waiting_stack;
+  std::queue<threadPoolArgStruct> waiting_queue;
   QueueHandle_t queue;
   pthread_t_pfr taskThr;
 

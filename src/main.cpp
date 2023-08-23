@@ -1,11 +1,11 @@
-//#include "parframework.hpp"
+#include "parframework.hpp"
 #include "stdio.h"
 #include <sys/time.h>
 #include "pthread.h"
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
-//using namespace Parframework;
+using namespace Parframework;
 
 int totalNumberOfThreads = 0;
 UBaseType_t totalNumberOfThreads_pthread = 0;
@@ -38,7 +38,7 @@ UBaseType_t unusedStack = 0;
     }
 } */
 
-void* fibonacci_pthread(void* num)
+/* void* fibonacci_pthread(void* num)
 {
     if (num == (void*)0)
     {
@@ -60,14 +60,35 @@ void* fibonacci_pthread(void* num)
 
         int a = (int)result1;
         int b = (int)result2;
-        totalNumberOfThreads_pthread = uxTaskGetStackHighWaterMark(NULL);
+        //totalNumberOfThreads_pthread = uxTaskGetStackHighWaterMark(NULL);
         return (void*)(a+b);
     }
+} */
+
+void* taskOne(void*)
+{
+    printf("task1\n");
+    vTaskDelay(1000/portTICK_PERIOD_MS);
+    printf("task1 ends\n");
+}
+
+void* taskTwo(void*)
+{
+    printf("task2\n");
+    vTaskDelay(1000/portTICK_PERIOD_MS);
+    printf("task2 ends\n");
+}
+
+void* taskThree(void*)
+{
+    printf("task3\n");
+    vTaskDelay(1000/portTICK_PERIOD_MS);
+    printf("task3 ends\n");
 }
 
 extern "C" void app_main() 
 {
-    struct timeval tv_now_start;
+    /* struct timeval tv_now_start;
     gettimeofday(&tv_now_start, NULL);
     int64_t time_us_start = (int64_t)tv_now_start.tv_sec * 1000000L + (int64_t)tv_now_start.tv_usec;
     printf("Time: %lld\n", time_us_start);
@@ -79,16 +100,21 @@ extern "C" void app_main()
     pthread_join_pfr(thr,  &a);
     printf("the number is %d\n", a);
     printf("total number of threads is: %d\n", totalNumberOfThread );*/
-    pthread_t thr;
+    /* pthread_t thr;
     pthread_create(&thr, NULL, fibonacci_pthread, (void*)12);
     pthread_join(thr, &a);
     printf("the number is %d\n", a);
-    printf("total number of threads is: %d\n", totalNumberOfThreads_pthread);
+    printf("total number of threads is: %d\n", totalNumberOfThreads_pthread); */
     //printf("unsused stack: %d\n", )
 
+    ThreadPool pool;
+    pool.start();
+    pool.queueTask(taskOne, NULL);
+    pool.queueTask(taskTwo, NULL);
+    pool.queueTask(taskThree, NULL);
+    vTaskDelete(NULL); 
 
-
-    struct timeval tv_now;
+    /* struct timeval tv_now;
     gettimeofday(&tv_now, NULL);
     int64_t time_us = (int64_t)tv_now.tv_sec * 1000000L + (int64_t)tv_now.tv_usec;
     printf("Time: %lld\n", time_us);
@@ -97,6 +123,6 @@ extern "C" void app_main()
 
     printf("Time dif ms: %f\n", ms);
 
-    vTaskDelete(NULL);
+    vTaskDelete(NULL);  */
 
 }
