@@ -336,6 +336,7 @@ class packaged_task_pfr<Ret(ArgTypes...)>
 };
 
 const size_t THREAD_NUMBER = 2;
+const size_t QUEUE_TASKS_NUMBER = 7;
 
 void* thread_pool_task(void* arg);
 
@@ -343,7 +344,7 @@ class ThreadPool
 {
   friend void* thread_pool_task(void* arg);
   public:
-  ThreadPool(): pool{}, size{THREAD_NUMBER}, queue{xQueueCreate(7, sizeof(threadPoolArgStruct))} {}
+  ThreadPool(): pool{}, size{THREAD_NUMBER}, queue{xQueueCreate(QUEUE_TASKS_NUMBER, sizeof(threadPoolArgStruct))} {}
 
   void start()
   {

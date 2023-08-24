@@ -65,27 +65,27 @@ UBaseType_t unusedStack = 0;
     }
 } */
 
-void* taskOne(void*)
+void* taskOne(void* num)
 {
     printf("task1\n");
-    vTaskDelay(1000/portTICK_PERIOD_MS);
-    printf("task1 ends\n");
+    vTaskDelay(500/portTICK_PERIOD_MS);
+    printf("task1 ends %p\n", num);
     return NULL;
 }
 
-void* taskTwo(void*)
+void* taskTwo(void* num )
 {
     printf("task2\n");
-    vTaskDelay(1000/portTICK_PERIOD_MS);
-    printf("task2 ends\n");
+    vTaskDelay(300/portTICK_PERIOD_MS);
+    printf("task2 ends %p\n", num);
     return NULL;
 }
 
-void* taskThree(void*)
+void* taskThree(void* num)
 {
     printf("task3\n");
     vTaskDelay(1000/portTICK_PERIOD_MS);
-    printf("task3 ends\n");
+    printf("task3 ends %p\n", num);
     return NULL;
 }
 
@@ -112,9 +112,9 @@ extern "C" void app_main()
 
     ThreadPool pool;
     pool.start();
-    pool.queueTask(taskOne, NULL);
-    pool.queueTask(taskTwo, NULL);
-    pool.queueTask(taskThree, NULL);
+    pool.queueTask(taskOne, (void*)3);
+    pool.queueTask(taskTwo, (void*)1);
+    pool.queueTask(taskThree, (void*)8);
     vTaskDelete(NULL); 
 
     /* struct timeval tv_now;
