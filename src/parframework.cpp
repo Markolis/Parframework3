@@ -454,19 +454,22 @@ void* threadPoolTask(void* arg)
   ThreadPool::threadPoolArgStruct task;
   while(1)
   {
-    if (xQueueReceive(pool->queue, (void*)&task, 50 / portTICK_PERIOD_MS) == pdTRUE)
+    pthread_t_pfr* thr = pool->findFirstFreeThread();
+    if (thr && !pool->waiting_queue.empty())
     {
-
+      task = pool->waiting_queue.front();
+      pool->waiting_queue.pop();
+      reinit_thread(thr);
+      pthread_create_pfr(*thr, task.func, task.param);
+    }
+    else if(xQueueReceive(pool->queue, (void*)&task, 50 / portTICK_PERIOD_MS) == pdTRUE)
+    {
       printf("received a task\n");
       pthread_t_pfr* thr = pool->findFirstFreeThread();
       if (thr)
       {
         printf("available thread found\n");
-        thr->detached = false;
-        thr->joined = false;
-        vSemaphoreDelete(thr->threadSem);
-        thr->threadSem = NULL;
-        thr->threadSem = xSemaphoreCreateBinary();
+        reinit_thread(thr);
         pthread_create_pfr(*thr, task.func, task.param);
       }
       else
@@ -475,27 +478,22 @@ void* threadPoolTask(void* arg)
         pool->waiting_queue.push(task);
       }
     }
-    else
-    {
-      printf("no task were queued\n");
-      pthread_t_pfr* thr = pool->findFirstFreeThread();
-      if (thr && !pool->waiting_queue.empty())
-      {
-        task = pool->waiting_queue.front();
-        pool->waiting_queue.pop();
-        thr->detached = false;
-        thr->joined = false;
-        vSemaphoreDelete(thr->threadSem);
-        thr->threadSem = NULL;
-        thr->threadSem = xSemaphoreCreateBinary();
-        pthread_create_pfr(*thr, task.func, task.param);
-      }
-    }
   }
 
   return NULL;
 }
 
+void reinit_thread(pthread_t_pfr* thr)
+{
+  thr->detached = false;
+  thr->joined = false;
+  vSemaphoreDelete(thr->threadSem);
+  thr->threadSem = NULL;
+  thr->threadSem = xSemaphoreCreateBinary();
+  thr->cancelation_requested = false;
+  thr->cancel_state = pthread_t_pfr::cancelability_state::DISABLED;
+  thr->cancel_type = pthread_t_pfr::cancelability_type::DEFERRED;
+}
 
 
 }
