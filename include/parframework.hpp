@@ -78,7 +78,7 @@ namespace Parframework
     friend void* cancel_handler(void* stack);
     friend void prepare_exit(pthread_t_pfr* thr);
     friend void pthread_testcancel();
-    friend void* threadPoolTask(void* arg);
+    friend void* thread_pool_task(void* arg);
     friend void reinit_thread(pthread_t_pfr* thr);
 
     public:
@@ -337,17 +337,17 @@ class packaged_task_pfr<Ret(ArgTypes...)>
 
 const size_t THREAD_NUMBER = 2;
 
-void* threadPoolTask(void* arg);
+void* thread_pool_task(void* arg);
 
 class ThreadPool
 {
-  friend void* threadPoolTask(void* arg);
+  friend void* thread_pool_task(void* arg);
   public:
   ThreadPool(): pool{}, size{THREAD_NUMBER}, waiting_queue{}, queue{xQueueCreate(7, sizeof(threadPoolArgStruct))} {}
 
   void start()
   {
-    pthread_create_pfr(taskThr, threadPoolTask, this);
+    pthread_create_pfr(taskThr, thread_pool_task, this);
     pthread_detach_pfr(taskThr);
   }
 

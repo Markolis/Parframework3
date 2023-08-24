@@ -448,21 +448,14 @@ int pthread_cond_broadcast_pfr(pthread_cond_t_pfr* var)
   }
 }
 
-void* threadPoolTask(void* arg)
+void* thread_pool_task(void* arg)
 {
   ThreadPool* pool = (ThreadPool*)arg;
   ThreadPool::threadPoolArgStruct task;
   while(1)
   {
     pthread_t_pfr* thr = pool->findFirstFreeThread();
-    if (thr && !pool->waiting_queue.empty())
-    {
-      task = pool->waiting_queue.front();
-      pool->waiting_queue.pop();
-      reinit_thread(thr);
-      pthread_create_pfr(*thr, task.func, task.param);
-    }
-    else if(xQueueReceive(pool->queue, (void*)&task, 50 / portTICK_PERIOD_MS) == pdTRUE)
+    if(thr && xQueueReceive(pool->queue, (void*)&task, 50 / portTICK_PERIOD_MS) == pdTRUE)
     {
       printf("received a task\n");
       if (thr)
@@ -477,6 +470,7 @@ void* threadPoolTask(void* arg)
         pool->waiting_queue.push(task);
       }
     }
+    printf("no available threads");
   }
 
   return NULL;
