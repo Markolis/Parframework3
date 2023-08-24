@@ -470,7 +470,7 @@ void* thread_pool_task(void* arg)
         pool->waiting_queue.push(task);
       }
     }
-    printf("no available threads");
+    printf("no available threads\n");
   }
 
   return NULL;
