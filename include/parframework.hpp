@@ -343,13 +343,7 @@ class ThreadPool
 {
   friend void* threadPoolTask(void* arg);
   public:
-  ThreadPool(): pool{}, size{THREAD_NUMBER}, waiting_queue{}, queue{xQueueCreate(7, sizeof(threadPoolArgStruct))}
-  {
-    for (int i = 0; i < THREAD_NUMBER; i++)
-    {
-      pthread_detach_pfr(pool[i]);
-    }
-  }
+  ThreadPool(): pool{}, size{THREAD_NUMBER}, waiting_queue{}, queue{xQueueCreate(7, sizeof(threadPoolArgStruct))} {}
 
   void start()
   {
