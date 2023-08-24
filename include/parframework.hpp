@@ -343,7 +343,7 @@ class ThreadPool
 {
   friend void* thread_pool_task(void* arg);
   public:
-  ThreadPool(): pool{}, size{THREAD_NUMBER}, waiting_queue{}, queue{xQueueCreate(7, sizeof(threadPoolArgStruct))} {}
+  ThreadPool(): pool{}, size{THREAD_NUMBER}, queue{xQueueCreate(7, sizeof(threadPoolArgStruct))} {}
 
   void start()
   {
@@ -378,7 +378,6 @@ class ThreadPool
 
   std::array<pthread_t_pfr, THREAD_NUMBER> pool;
   size_t size;
-  std::queue<threadPoolArgStruct> waiting_queue;
   QueueHandle_t queue;
   pthread_t_pfr taskThr;
 

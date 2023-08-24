@@ -457,18 +457,9 @@ void* thread_pool_task(void* arg)
     pthread_t_pfr* thr = pool->findFirstFreeThread();
     if(thr && xQueueReceive(pool->queue, (void*)&task, 50 / portTICK_PERIOD_MS) == pdTRUE)
     {
-      printf("received a task\n");
-      if (thr)
-      {
-        printf("available thread found\n");
-        reinit_thread(thr);
-        pthread_create_pfr(*thr, task.func, task.param);
-      }
-      else
-      {
-        printf("no available thread found\n");
-        pool->waiting_queue.push(task);
-      }
+      printf("available thread found\n");
+      reinit_thread(thr);
+      pthread_create_pfr(*thr, task.func, task.param);
     }
     printf("no available threads");
   }
