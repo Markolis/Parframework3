@@ -79,6 +79,7 @@ namespace Parframework
     friend void prepare_exit(pthread_t_pfr* thr);
     friend void pthread_testcancel();
     friend void* threadPoolTask(void* arg);
+    friend void reinit_thread(pthread_t_pfr* thr);
 
     public:
       pthread_t_pfr();

@@ -70,6 +70,7 @@ void* taskOne(void*)
     printf("task1\n");
     vTaskDelay(1000/portTICK_PERIOD_MS);
     printf("task1 ends\n");
+    return NULL;
 }
 
 void* taskTwo(void*)
@@ -77,6 +78,7 @@ void* taskTwo(void*)
     printf("task2\n");
     vTaskDelay(1000/portTICK_PERIOD_MS);
     printf("task2 ends\n");
+    return NULL;
 }
 
 void* taskThree(void*)
@@ -84,6 +86,7 @@ void* taskThree(void*)
     printf("task3\n");
     vTaskDelay(1000/portTICK_PERIOD_MS);
     printf("task3 ends\n");
+    return NULL;
 }
 
 extern "C" void app_main() 
