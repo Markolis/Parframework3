@@ -461,7 +461,7 @@ void* thread_pool_task(void* arg)
       reinit_thread(thr);
       pthread_create_pfr(*thr, task.func, task.param);
     }
-    printf("no available threads");
+    printf("no available threads\n");
   }
 
   return NULL;
