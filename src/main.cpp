@@ -65,32 +65,38 @@ UBaseType_t unusedStack = 0;
     }
 } */
 
-void* taskOne(void* num)
+int fibonacci_packaged_task(int num)
 {
-    printf("task1\n");
-    vTaskDelay(500/portTICK_PERIOD_MS);
-    printf("task1 ends %p\n", num);
-    return NULL;
-}
+    if (num == 0)
+    {
+        return 0;
+    }
+    else if (num == 1)
+    {
+        return 1;
+    }
+    else
+    {
+        packaged_task_pfr<int(int)> pac1{fibonacci_packaged_task};
+        packaged_task_pfr<int(int)> pac2{fibonacci_packaged_task};
+        future_pfr<int> fut1 = pac1.get_future();
+        future_pfr<int> fut2 = pac2.get_future();
+        pac1(num-1);
+        pac2(num-2);
 
-void* taskTwo(void* num )
-{
-    printf("task2\n");
-    vTaskDelay(300/portTICK_PERIOD_MS);
-    printf("task2 ends %p\n", num);
-    return NULL;
-}
-
-void* taskThree(void* num)
-{
-    printf("task3\n");
-    vTaskDelay(1000/portTICK_PERIOD_MS);
-    printf("task3 ends %p\n", num);
-    return NULL;
+        int res1 = fut1.get();
+        int res2 = fut2.get();
+        return res1+res2;
+    }
 }
 
 extern "C" void app_main() 
 {
+    packaged_task_pfr<int(int)> mainTask{fibonacci_packaged_task};
+    future_pfr<int> fut = mainTask.get_future();
+    mainTask(1);
+    int res = fut.get();
+    printf("%d\n", res);
     /* struct timeval tv_now_start;
     gettimeofday(&tv_now_start, NULL);
     int64_t time_us_start = (int64_t)tv_now_start.tv_sec * 1000000L + (int64_t)tv_now_start.tv_usec;
@@ -109,13 +115,6 @@ extern "C" void app_main()
     printf("the number is %d\n", a);
     printf("total number of threads is: %d\n", totalNumberOfThreads_pthread); */
     //printf("unsused stack: %d\n", )
-
-    ThreadPool pool;
-    pool.start();
-    pool.queueTask(taskOne, (void*)3);
-    pool.queueTask(taskTwo, (void*)1);
-    pool.queueTask(taskThree, (void*)8);
-    vTaskDelete(NULL); 
 
     /* struct timeval tv_now;
     gettimeofday(&tv_now, NULL);
