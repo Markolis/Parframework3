@@ -94,7 +94,7 @@ extern "C" void app_main()
 {
     packaged_task_pfr<int(int)> mainTask{fibonacci_packaged_task};
     future_pfr<int> fut = mainTask.get_future();
-    mainTask(1);
+    mainTask(10);
     int res = fut.get();
     printf("%d\n", res);
     /* struct timeval tv_now_start;

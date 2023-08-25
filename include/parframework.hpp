@@ -312,7 +312,7 @@ class packaged_task_pfr<Ret(ArgTypes...)>
     };
     
   TaskHandle_t tHandle = NULL;
-  xTaskCreate(wrappedFunc, "PACKAGED_TASK", 1024, &argStruct, 1, &tHandle);
+  xTaskCreate(wrappedFunc, "PACKAGED_TASK", 900, &argStruct, 1, &tHandle);
 
   assert(tHandle);
   }
