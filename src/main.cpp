@@ -92,6 +92,10 @@ int fibonacci_packaged_task(int num)
 
 extern "C" void app_main() 
 {
+    struct timeval tv_now_start;
+    gettimeofday(&tv_now_start, NULL);
+    int64_t time_us_start = (int64_t)tv_now_start.tv_sec * 1000000L + (int64_t)tv_now_start.tv_usec;
+    printf("Time: %lld\n", time_us_start);
     packaged_task_pfr<int(int)> mainTask{fibonacci_packaged_task};
     future_pfr<int> fut = mainTask.get_future();
     mainTask(10);
@@ -116,7 +120,7 @@ extern "C" void app_main()
     printf("total number of threads is: %d\n", totalNumberOfThreads_pthread); */
     //printf("unsused stack: %d\n", )
 
-    /* struct timeval tv_now;
+    struct timeval tv_now;
     gettimeofday(&tv_now, NULL);
     int64_t time_us = (int64_t)tv_now.tv_sec * 1000000L + (int64_t)tv_now.tv_usec;
     printf("Time: %lld\n", time_us);
@@ -125,6 +129,6 @@ extern "C" void app_main()
 
     printf("Time dif ms: %f\n", ms);
 
-    vTaskDelete(NULL);  */
+    vTaskDelete(NULL);  
 
 }
